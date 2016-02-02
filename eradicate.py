@@ -86,7 +86,7 @@ def setTNT(number):
 		tntBlocks.append(pos)
 		#~ print(tntBlocks)
 
-	     
+# See http://www.stuffaboutcode.com/2013/05/raspberry-pi-minecraft-block-events.html 
 def fuseTNT(pos, second):
 	for fuse in range(0, second):
 		mc.setBlock(pos.x, pos.y, pos.z, block.AIR)
