@@ -1,93 +1,17 @@
 import mcpi.minecraft as minecraft
 import mcpi.block as block
 import time
+from worldbuilder import WorldBuilder
+from wallbuilder import WallBuilder
 from random import randint
 
 # mc = minecraft.Minecraft.create()
 mc = minecraft.Minecraft.create('10.0.108.6')
+wb = WorldBuilder(mc)
+wab = WallBuilder(mc)
+
 tntBlocks = []
-undergroundBlocks = [
-	block.STONE.id,
-	block.GRAVEL.id,
-	block.IRON_ORE.id,
-	block.COAL_ORE.id
-]
-
-
-def flattenMap(blockSize):
-	""" Flattens the map """
-	# Flatten map
-	mc.setBlocks(
-		- blockSize,
-		0,
-		blockSize,
-
-		blockSize,
-		blockSize,
-		- blockSize,
-		block.AIR.id
-	)
-	# Set ground
-	mc.setBlocks(
-		- blockSize, # x
-		- 1,		# y
-		blockSize,	# z
-		
-		blockSize, #x1
-		- 1,	
-		- blockSize,
-		block.GRASS.id
-	)
-	
-	# set underground
-	# in a later version, try to randomize each individual block 
-	# (must use setBlock() and calculate possible block positions 
-	# ourselves)
-	mc.setBlocks(
-		- blockSize, # x
-		- 5,		# y
-		blockSize,	# z
-		
-		blockSize, #x1
-		- 2,	
-		- blockSize,
-		undergroundBlocks[randint(0, len(undergroundBlocks) - 1)]
-	)
-
 mc.player.setPos(0,0,0)
-
-# Todo: Maueren wierklech glaeichmaesseg verdeelen
-def placeWalls():
-	""" Randomly builds Walls """
-	for q in xrange(15):
-		x = randint(-25, 25)
-		z = randint(-25, 25)
-		length = randint(3, 7)
-
-		mc.setBlocks(
-			x,
-			0,
-			z,
-			x + length,
-			2,
-			z,
-			block.STONE.id
-		)
-
-	for q in xrange(15):
-		x = randint(-25, 25)
-		z = randint(-25, 25)
-		length = randint(3, 7)
-
-		mc.setBlocks(
-			x,
-			0,
-			z,
-			x ,
-			2,
-			z + length,
-			block.STONE.id
-		)
 
 def setTNT(number, radius):
 	""" Randomly sets a number of TNT """
@@ -117,7 +41,12 @@ def createSphere(blastRadius, pos):
 # See http://www.stuffaboutcode.com/2013/05/raspberry-pi-minecraft-block-events.html 
 def fuseTNT(pos, second):
 	for fuse in range(0, second):
-		if mc.player.getTilePos() == minecraft.Vec3(pos.x, pos.y + 1, pos.z):
+		if (fuse % 5) == 0:
+			mc.postToChat("countdown: %d " % (second - fuse))
+		posBlock = minecraft.Vec3(pos.x, pos.y + 1, pos.z)
+		posAir = minecraft.Vec3(pos.x, pos.y, pos.z)
+		posPlayer = mc.player.getTilePos()
+		if posPlayer == posBlock or posPlayer == posAir:
 			mc.postToChat("Bomb defused")
 			return False 
 		mc.setBlock(pos.x, pos.y, pos.z, block.AIR)
@@ -126,28 +55,19 @@ def fuseTNT(pos, second):
 		time.sleep(0.5)   
 	return True
 
-#~ def buildTower(height, width):
-	#~ mc.setBlocks(
-		#~ 1,1,1,
-		#~ width,height,2,
-		#~ block.WOOD.id
-	#~ )
-		
-
 if __name__ == "__main__":
-	flattenMap(60)
-	placeWalls()
-	setTNT(20, 15)	# number
-	mc.camera.setNormal()
-	#~ buildTower(30, 8)
-	mc.postToChat("Hello")
-	mc.postToChat("Walk over the bombs before they explode.")
-	mc.postToChat("Let's start!")
-	for tnt in tntBlocks:
-		if fuseTNT(tnt, 15):
-			createSphere(
-				randint(3, 4), 
-				tnt
-			)
-	mc.postToChat ("Game Over!")
+	wb.flattenMap(60)
+	wb.buildUnderground(60)
+	wab.placeWalls()
+	#~ setTNT(20, 15)	# number
+	#~ mc.camera.setNormal()
+	#~ mc.postToChat("Walk over the bombs before they explode.")
+	#~ mc.postToChat("Let's start!")
+	#~ for tnt in tntBlocks:
+		#~ if fuseTNT(tnt, 15):
+			#~ createSphere(
+				#~ randint(4, 5), 
+				#~ tnt
+			#~ )
+	#~ mc.postToChat ("Game Over!")
 
