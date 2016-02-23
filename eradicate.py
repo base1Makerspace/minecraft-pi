@@ -1,6 +1,6 @@
 import mcpi.minecraft as minecraft
 import mcpi.block as block
-import time
+import time, sys
 from worldbuilder import WorldBuilder
 from wallbuilder import WallBuilder
 from random import randint
@@ -55,19 +55,28 @@ def fuseTNT(pos, second):
 		time.sleep(0.5)   
 	return True
 
+lev = 1
+
 if __name__ == "__main__":
 	wb.flattenMap(60)
 	wb.buildUnderground(60)
-	wab.placeWalls()
-	#~ setTNT(20, 15)	# number
-	#~ mc.camera.setNormal()
-	#~ mc.postToChat("Walk over the bombs before they explode.")
-	#~ mc.postToChat("Let's start!")
-	#~ for tnt in tntBlocks:
-		#~ if fuseTNT(tnt, 15):
-			#~ createSphere(
-				#~ randint(4, 5), 
-				#~ tnt
-			#~ )
-	#~ mc.postToChat ("Game Over!")
+	mc.camera.setNormal()
+	mc.postToChat("Walk over the bombs before they explode.")
+	while True:
+		wab.placeWalls(lev)
+		mc.postToChat('Level %d' % lev)
+		print('Level %d' % lev)
+		setTNT(lev * 5, 20 / lev)	# number
+		mc.postToChat("Begin!")
+		for tnt in tntBlocks:
+			if fuseTNT(tnt, 15):
+				createSphere(
+					randint(4, 5), 
+					tnt
+				)
+				mc.postToChat ("You lose, too bad")
+				sys.exit(0)
+		mc.postToChat ("Well done!")
+		lev = lev + 1
+		
 

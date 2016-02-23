@@ -5,9 +5,9 @@ class WallBuilder(object):
 	def __init__(self, mc):
 		self.mc = mc
 	
-	def placeWalls(self):
+	def placeWalls(self, lev):
 		""" Randomly builds Walls """
-		for q in xrange(15):
+		for q in xrange(lev):
 			x = randint(-25, 25)
 			z = randint(-25, 25)
 			length = randint(3, 7)
@@ -22,7 +22,7 @@ class WallBuilder(object):
 				block.STONE.id
 			)
 
-		for q in xrange(15):
+		for q in xrange(lev):
 			x = randint(-25, 25)
 			z = randint(-25, 25)
 			length = randint(3, 7)
